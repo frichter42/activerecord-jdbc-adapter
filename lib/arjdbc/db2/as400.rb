@@ -103,6 +103,15 @@ module ArJdbc
 
     DRIVER_NAME = 'com.ibm.as400.access.AS400JDBCDriver'.freeze
 
+    READ_QUERY = ActiveRecord::ConnectionAdapters::AbstractAdapter.build_read_query_regexp(
+      :pragma
+    ) # :nodoc:
+    private_constant :READ_QUERY
+
+    def write_query?(sql) # :nodoc:
+      !READ_QUERY.match?(sql)
+    end
+
     # @private
     # @deprecated no longer used
     def as400?
