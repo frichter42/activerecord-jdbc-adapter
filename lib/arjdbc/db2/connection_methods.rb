@@ -23,6 +23,7 @@ ArJdbc::ConnectionMethods.module_eval do
 
   # @note Assumes AS400 driver (*jt400.jar*) is on class-path.
   def as400_connection(config)
+    config = config.deep_dup
     config[:adapter_spec] ||= ::ArJdbc::AS400
 
     return jndi_connection(config) if config[:jndi]
