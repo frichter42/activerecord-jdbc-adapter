@@ -20,7 +20,7 @@ module ArJdbc
       # - and -sn specified schema name
       # 
       
-      def structure_dump(filename)
+      def structure_dump(filename, flags = {})
         establish_connection(config)
         dump = File.open(filename, "w:utf-8")
         
