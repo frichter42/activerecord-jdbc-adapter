@@ -19,8 +19,46 @@ module ArJdbc
       # - where SAMPLE is the database name
       # - and -sn specified schema name
       # 
-      
+
       def structure_dump(filename, flags = {})
+        if config[:adapter] == "as400"
+          rv = structure_dump_as400(filename, flags)
+        else
+          rv = structure_dump_db2(filename, flags)
+        end
+        rv
+      end
+      
+      def structure_dump_as400(filename, flags = {})
+        establish_connection(config)
+        dump = File.open(filename, "w:utf-8")
+
+        schema_name = connection.schema.upcase if connection.schema
+        object_types = %w(TYPE VARIABLE SEQUENCE TABLE VIEW ALIAS MASK PERMISSION FUNCTION PROCEDURE TRIGGER CONSTRAINT XSR INDEX)
+        object_types.each do |object_type|
+          stmt = <<~SQL
+            CALL GENERATE_SQL(
+              '%', '#{schema_name}',
+              '#{object_type}',
+              TRIGGER_OPTION => 0,
+              CONSTRAINT_OPTION => 0,
+              CREATE_OR_REPLACE_OPTION => 1,
+              MASK_AND_PERMISSION_OPTION => 0,
+              QUALIFIED_NAME_OPTION => 1,
+              ADDITIONAL_INDEX_OPTION => 1,
+              TEMPORAL_OPTION => 1
+            )
+          SQL
+          res = connection.select_all(stmt)
+          res.each do |row|
+            dump << row["srcdta"].rstrip + "\n"
+          end
+        end
+
+        dump.close
+      end
+
+      def structure_dump_db2(filename, flags = {})
         establish_connection(config)
         dump = File.open(filename, "w:utf-8")
         
