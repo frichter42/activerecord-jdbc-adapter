@@ -34,6 +34,7 @@ module ArJdbc
         dump = File.open(filename, "w:utf-8")
 
         schema_name = connection.schema.upcase if connection.schema
+        schema_name = flags[:schema_name].upcase if flags[:schema_name]
         object_types = %w(TYPE VARIABLE SEQUENCE TABLE VIEW ALIAS MASK PERMISSION FUNCTION PROCEDURE TRIGGER CONSTRAINT XSR INDEX)
         object_types.each do |object_type|
           stmt = <<~SQL
