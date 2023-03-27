@@ -81,7 +81,7 @@ module ArJdbc
       end
 
       # overridden to support legacy binds
-      def select_all(arel, name = nil, binds = NO_BINDS, preparable: nil)
+      def select_all(arel, name = nil, binds = NO_BINDS, preparable: nil, async: nil)
         binds = convert_legacy_binds_to_attributes(binds) if binds.first.is_a?(Array)
         super
       end

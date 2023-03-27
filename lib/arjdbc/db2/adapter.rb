@@ -532,7 +532,13 @@ module ArJdbc
       @connection.execute_update "call sysproc.admin_cmd('RUNSTATS ON TABLE #{tablename} WITH DISTRIBUTION AND DETAILED INDEXES ALL UTIL_IMPACT_PRIORITY #{priority}')"
     end
 
-    if ::ActiveRecord::VERSION::MAJOR >= 4
+    if ::ActiveRecord::VERSION::MAJOR >= 7
+
+    def select(sql, name = nil, binds = [], prepare: false, async: false)
+      exec_query(to_sql(suble_null_test(sql), binds), name, binds)
+    end
+
+    elsif ::ActiveRecord::VERSION::MAJOR >= 4
 
     def select(sql, name = nil, binds = [])
       exec_query(to_sql(suble_null_test(sql), binds), name, binds)
